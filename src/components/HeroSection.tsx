@@ -13,10 +13,9 @@ const HeroSection = () => {
         }}
       />
 
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-neon-cyan/5 blur-[120px] animate-pulse" />
+      <div className="absolute top-1/4 left-1/4 h-80 w-80 rounded-full bg-neon-cyan/5 blur-[90px]" />
       <div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-neon-purple/5 blur-[120px] animate-pulse"
-        style={{ animationDelay: "1.5s" }}
+        className="absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-neon-purple/5 blur-[90px]"
       />
 
       <div className="relative z-10 text-center max-w-4xl mx-auto">
@@ -27,7 +26,7 @@ const HeroSection = () => {
           className="mb-8 inline-block"
         >
           <div className="relative">
-            <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink blur-md opacity-70 animate-spin-slow" />
+            <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink blur-md opacity-70" />
             <img
               src={profileImg}
               alt="Foto de perfil"

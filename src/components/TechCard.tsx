@@ -3,12 +3,13 @@ import { useState } from "react";
 
 interface Props {
   name: string;
-  icon: string;
   color: string;
+  image: string;
+  details: string[];
   delay: number;
 }
 
-const TechCard = ({ name, icon, color, delay }: Props) => {
+const TechCard = ({ name, color, image, details, delay }: Props) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
@@ -17,33 +18,43 @@ const TechCard = ({ name, icon, color, delay }: Props) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
-      className="float-animation perspective-[800px]"
-      style={{ animationDelay: `${delay * 2}s` }}
+      className="perspective-[800px]"
       onMouseEnter={() => setIsFlipped(true)}
       onMouseLeave={() => setIsFlipped(false)}
     >
       <motion.div
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: "spring" }}
+        animate={{ rotateY: isFlipped ? 180 : 0, y: isFlipped ? -8 : 0, scale: isFlipped ? 1.03 : 1 }}
+        transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
         style={{ transformStyle: "preserve-3d" }}
-        className="relative w-36 h-44 md:w-44 md:h-52 cursor-pointer"
+        className="relative h-48 w-40 cursor-pointer md:h-56 md:w-48"
       >
         <div
-          className="absolute inset-0 glass flex flex-col items-center justify-center gap-3 transition-shadow duration-300"
+          className="absolute inset-0 glass flex items-center justify-center overflow-hidden p-4 transition-shadow duration-300 md:p-5"
           style={{
             backfaceVisibility: "hidden",
-            boxShadow: isFlipped ? "none" : `0 0 25px ${color}33, 0 0 50px ${color}11`,
+            boxShadow: `0 0 25px ${color}33, 0 0 50px ${color}11`,
           }}
         >
-          <span className="text-4xl md:text-5xl font-bold tracking-wide">{icon}</span>
-          <span className="text-sm font-semibold tracking-wider text-foreground/80">{name}</span>
           <div
-            className="absolute inset-0 rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-300"
+            className="flex h-full w-full items-center justify-center overflow-hidden"
+            style={{
+              filter: `drop-shadow(0 0 18px ${color}55) drop-shadow(0 0 36px ${color}22)`,
+            }}
+          >
+            <img
+              src={image}
+              alt={`Logo de ${name}`}
+              className="h-full w-full object-contain object-center scale-[1.35] md:scale-[1.5]"
+              loading="lazy"
+            />
+          </div>
+          <div
+            className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 hover:opacity-100"
             style={{ boxShadow: `inset 0 0 30px ${color}22, 0 0 40px ${color}22` }}
           />
         </div>
         <div
-          className="absolute inset-0 glass flex items-center justify-center p-4 text-center"
+          className="absolute inset-0 glass flex items-center justify-center p-4 text-left md:p-5"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
@@ -51,9 +62,16 @@ const TechCard = ({ name, icon, color, delay }: Props) => {
             borderColor: color,
           }}
         >
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Experiencia practica en proyectos reales con <span className="font-bold text-foreground">{name}</span>
-          </p>
+          <div className="w-full">
+            <p className="mb-3 text-sm font-semibold tracking-[0.16em] text-foreground/90">{name}</p>
+            <ul className="space-y-2 text-xs leading-snug text-muted-foreground md:text-[13px]">
+              {details.map((detail) => (
+                <li key={detail} className="border-l border-primary/30 pl-2">
+                  {detail}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </motion.div>
     </motion.div>

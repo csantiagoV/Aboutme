@@ -16,12 +16,22 @@ const ParticleBackground = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isSmallScreen = window.innerWidth < 768;
+    const isLowPowerDevice = (navigator.hardwareConcurrency ?? 8) <= 4;
+
+    if (prefersReducedMotion || isSmallScreen || isLowPowerDevice) return;
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let animationId: number;
+    let lastFrameTime = 0;
     const particles: Particle[] = [];
     const colors = ["0, 230, 255", "160, 80, 255", "255, 60, 170", "60, 130, 255"];
+    const targetFrameMs = 1000 / 30;
+    const connectionDistance = 110;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -30,20 +40,26 @@ const ParticleBackground = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    const count = Math.min(80, Math.floor(window.innerWidth / 20));
+    const count = Math.min(34, Math.floor(window.innerWidth / 42));
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.5 + 0.1,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: (Math.random() - 0.5) * 0.28,
+        size: Math.random() * 1.6 + 0.5,
+        opacity: Math.random() * 0.35 + 0.08,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
 
-    const draw = () => {
+    const draw = (time = 0) => {
+      if (time - lastFrameTime < targetFrameMs) {
+        animationId = requestAnimationFrame(draw);
+        return;
+      }
+      lastFrameTime = time;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((p) => {
@@ -61,7 +77,7 @@ const ParticleBackground = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color}, ${p.opacity * 0.15})`;
+        ctx.fillStyle = `rgba(${p.color}, ${p.opacity * 0.08})`;
         ctx.fill();
       });
 
@@ -71,12 +87,12 @@ const ParticleBackground = () => {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
+          if (dist < connectionDistance) {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(0, 230, 255, ${0.08 * (1 - dist / 150)})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `rgba(0, 230, 255, ${0.05 * (1 - dist / connectionDistance)})`;
+            ctx.lineWidth = 0.4;
             ctx.stroke();
           }
         }
